@@ -1,13 +1,16 @@
 var canvas = document.getElementById('c');
 var ctx = canvas.getContext('2d');
-var w = 10; var h = 10; var colors = ['#aaa','#d0d','#dd0','#0dd'];
-canvas.width = 500;
-canvas.height = 500;
+var w = 8;
+var h = 8; 
+var colors = ['#aaa','#d0d','#dd0','#0dd'];
+var M = Math;
 var ww = 500;
 var hh = 500;
+canvas.width = ww;
+canvas.height = ww;
 var pad = 0;
 var slice = ww / w;
-function rand(i) { return Math.floor(Math.random()*i); }
+function rand(i) { return M.floor(M.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
 var squares = {};
 for (var i = 0; i < w; i++) {
@@ -23,7 +26,7 @@ function draw() {
       if (!color) color = '#000';
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc((i + 0.5) * slice + pad, (j + 0.5) * slice + pad, slice/2, 0, 2 * Math.PI, false);
+      ctx.arc((i + 0.5) * slice + pad, (j + 0.5) * slice + pad, slice/2, 0, 2 * M.PI, false);
       ctx.fill();
     }
   }
@@ -31,13 +34,13 @@ function draw() {
 var sel = null;
 var lsel = null;
 canvas.onclick = function(e) {
-  lsel = [Math.floor(e.offsetX / slice), Math.floor(e.offsetY / slice)];
+  lsel = [M.floor(e.offsetX / slice), M.floor(e.offsetY / slice)];
   swap(true);
 }
 function swap(chk) {
   if (sel) {
-    var dx = Math.abs(lsel[0] - sel[0]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
-    var dy = Math.abs(lsel[1] - sel[1]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
+    var dx = M.abs(lsel[0] - sel[0]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
+    var dy = M.abs(lsel[1] - sel[1]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
     if (dx + dy != 1) { sel = null; return; /* error */}
     var d = squares[lsel];
     squares[lsel] = squares[sel];
