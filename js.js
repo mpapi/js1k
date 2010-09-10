@@ -28,8 +28,18 @@ function draw() {
     }
   }
 }
+var sel = null;
 canvas.onclick = function(e) {
-  console.debug(e);
+  var lsel = [[Math.floor(e.offsetX / slice), Math.floor(e.offsetY / slice)]];
+  if (sel) {
+    var d = squares[lsel];
+    squares[lsel] = squares[sel];
+    squares[sel] = d;
+    sel = null;
+    refresh();
+  } else {
+    sel = lsel;
+  }
 }
 function collapse() {
   var matches = [];
@@ -50,7 +60,6 @@ function collapse() {
   }
   while (settle() > 0);
   draw()
-  console.debug('collapse', matches.length);
   return matches.length;
 }
 function settle() {
@@ -65,7 +74,6 @@ function settle() {
       }
     }
   }
-  console.debug('settle', count);
   return count;
 }
 function fill() {
@@ -79,10 +87,12 @@ function fill() {
     }
   }
   while (collapse() > 0);
-  console.debug('fill', count);
   return count;
 }
-draw()
-while (collapse() > 0);
-while (fill() > 0);
+function refresh() {
+  draw()
+  while (collapse() > 0);
+  while (fill() > 0);
+}
+refresh();
 //while (fill() > 0);
