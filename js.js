@@ -9,19 +9,19 @@ var pad = 0;
 var slice = ww / w;
 function rand(i) { return Math.floor(Math.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
-var squares = [];
+var squares = {};
 for (var i = 0; i < w; i++) {
-  var buf = [];
   for (var j = 0; j < h; j++) {
-    buf.push(sq());
+    squares[[i,j]] = sq();
   }
-  squares.push(buf);
 }
 function draw() {
   for (var i = 0; i < w; i++) {
     for (var j = 0; j < h; j++) {
       //ctx.fillRect(i * slice + pad, j * slice + pad, i * slice + pad + slice, j * slice + pad + slice);
-      ctx.fillStyle = squares[i][j];
+      var color = squares[[i,j]];
+      if (!color) color = '#000';
+      ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc((i + 0.5) * slice + pad, (j + 0.5) * slice + pad, slice/2, 0, 2 * Math.PI, false);
       ctx.fill();
@@ -31,4 +31,58 @@ function draw() {
 canvas.onclick = function(e) {
   console.debug(e);
 }
+function collapse() {
+  var matches = [];
+  for (var i = 0; i < w; i++) {
+    for (var j = 0; j < h; j++) {
+      var parts = [[i - 1, j], [i, j], [i + 1, j]];
+      if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
+        matches = matches.concat(parts);
+      }
+      var parts = [[i, j - 1], [i, j], [i, j + 1]];
+      if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
+        matches = matches.concat(parts);
+      }
+    }
+  }
+  for (var i = 0; i < matches.length; i++) {
+    squares[matches[i]] = null;
+  }
+  while (settle() > 0);
+  draw()
+  console.debug('collapse', matches.length);
+  return matches.length;
+}
+function settle() {
+  var count = 0;
+  for (var j = h - 1; j >= 0; j--) {
+    for (var i = 0; i < w; i++) {
+      if (!squares[[i, j]]) {
+        var d = squares[[i, j - 1]];
+        squares[[i, j]] = d;
+        squares[[i, j - 1]] = null;
+        if (d) count++;
+      }
+    }
+  }
+  console.debug('settle', count);
+  return count;
+}
+function fill() {
+  var count = 0;
+  for (var i = 0; i < w; i++) {
+    for (var j = 0; j < h; j++) {
+      if (!squares[[i, j]]) {
+        squares[[i, j]] = sq();
+        count++;
+      }
+    }
+  }
+  while (collapse() > 0);
+  console.debug('fill', count);
+  return count;
+}
 draw()
+while (collapse() > 0);
+while (fill() > 0);
+//while (fill() > 0);
