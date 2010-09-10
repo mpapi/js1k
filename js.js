@@ -13,24 +13,25 @@ var slice = ww / w;
 var score = 0;
 function rand(i) { return M.floor(M.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
-var squares = {};
-for (var i = 0; i < w; i++) {
-  for (var j = 0; j < h; j++) {
-    squares[[i,j]] = sq();
-  }
-}
-function draw() {
-  ctx.clearRect(0, 0, ww, hh);
-  for (var i = 0; i < w; i++) {
-    for (var j = 0; j < h; j++) {
-      var color = squares[[i,j]];
-      if (!color) color = '#000';
-      ctx.fillStyle = color;
-      var m = i * slice;
-      var n = j * slice;
-      ctx.fillRect(m + pad, n + pad, slice - pad, slice - pad);
+function loop(fn) {
+  for (var j = h - 1; j >= 0; j--) {
+    for (var i = 0; i < w; i++) {
+      fn(i, j);
     }
   }
+}
+var squares = {};
+loop(function(i, j) { squares[[i,j]] = sq() });
+function draw() {
+  ctx.clearRect(0, 0, ww, hh);
+  loop(function(i, j) {
+    var color = squares[[i,j]];
+    if (!color) color = '#000';
+    ctx.fillStyle = color;
+    var m = i * slice;
+    var n = j * slice;
+    ctx.fillRect(m + pad, n + pad, slice - pad, slice - pad);
+  });
   ctx.fillStyle = '#000';
   ctx.font = 'bold 30px monospace';
   ctx.fillText(score * 10, ww - 100, 40);
@@ -39,7 +40,7 @@ var sel = null;
 var lsel = null;
 canvas.onclick = function(e) {
   lsel = [M.floor(e.offsetX / slice), M.floor(e.offsetY / slice)];
-  swap(true);
+  swap(1);
 }
 function swap(chk) {
   if (sel) {
@@ -49,7 +50,7 @@ function swap(chk) {
     var d = squares[lsel];
     squares[lsel] = squares[sel];
     squares[sel] = d;
-    if (chk && collapse() == 0) { var d = lsel; lsel = sel; sel = d; swap(false); }
+    if (chk && collapse() == 0) { var d = lsel; lsel = sel; sel = d; swap(0); }
     else { sel = null; refresh(); }
   } else {
     sel = lsel;
@@ -57,18 +58,16 @@ function swap(chk) {
 }
 function collapse() {
   var matches = [];
-  for (var i = 0; i < w; i++) {
-    for (var j = 0; j < h; j++) {
-      var parts = [[i - 1, j], [i, j], [i + 1, j]];
-      if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
-        matches = matches.concat(parts);
-      }
-      var parts = [[i, j - 1], [i, j], [i, j + 1]];
-      if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
-        matches = matches.concat(parts);
-      }
+  loop(function(i, j) {
+    var parts = [[i - 1, j], [i, j], [i + 1, j]];
+    if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
+      matches = matches.concat(parts);
     }
-  }
+    var parts = [[i, j - 1], [i, j], [i, j + 1]];
+    if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
+      matches = matches.concat(parts);
+    }
+  });
   for (var i = 0; i < matches.length; i++) {
     squares[matches[i]] = null;
   }
@@ -79,28 +78,24 @@ function collapse() {
 }
 function settle() {
   var count = 0;
-  for (var j = h - 1; j >= 0; j--) {
-    for (var i = 0; i < w; i++) {
-      if (!squares[[i, j]]) {
-        var d = squares[[i, j - 1]];
-        squares[[i, j]] = d;
-        squares[[i, j - 1]] = null;
-        if (d) count++;
-      }
+  loop(function(i, j) {
+    if (!squares[[i, j]]) {
+      var d = squares[[i, j - 1]];
+      squares[[i, j]] = d;
+      squares[[i, j - 1]] = null;
+      if (d) count++;
     }
-  }
+  });
   return count;
 }
 function fill() {
   var count = 0;
-  for (var i = 0; i < w; i++) {
-    for (var j = 0; j < h; j++) {
-      if (!squares[[i, j]]) {
-        squares[[i, j]] = sq();
-        count++;
-      }
+  loop(function(i, j) {
+    if (!squares[[i, j]]) {
+      squares[[i, j]] = sq();
+      count++;
     }
-  }
+  });
   while (collapse() > 0);
   return count;
 }
