@@ -15,7 +15,7 @@ var score = 0;
 function sq() { return colors[M.floor(M.random()*colors.length)]; }
 function loop(fn) {
   var j = h - 1; while (j--) {
-    var i = w - 1; while (w--) fn(i, j);
+    var i = w - 1; while (i--) fn(i, j);
   }
 }
 var squares = {};
