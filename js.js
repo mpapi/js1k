@@ -1,6 +1,7 @@
 var canvas = document.getElementById('c');
 var ctx = canvas.getContext('2d');
 var w = 9;
+var z = w*w;
 var colors = ['aaa','d0d','dd0','0dd'];
 var M = Math;
 var ww = canvas.width = canvas.height = 500;
@@ -10,19 +11,17 @@ var score = 0;
 function sq() { return '#'+colors[M.floor(M.random()*colors.length)]; }
 function loop(fn) {
   var j = w - 1; while (j--) {
-    var i = w - 1; while (i--) fn(i, j);
+    var i = w - 1; while (i--) fn(j * z + i + 1, i, j);
   }
 }
 var squares = {};
-loop(function(i, j) { squares[[i,j]] = sq() });
+loop(function(n) { squares[n] = sq() });
 function draw() {
   ctx.clearRect(0, 0, ww, ww);
-  loop(function(i, j) {
-    var color = squares[[i,j]];
+  loop(function(n, i, j) {
+    var color = squares[n];
     ctx.fillStyle = color;
-    var m = i * slice;
-    var n = j * slice;
-    ctx.fillRect(m + pad, n + pad, slice - pad, slice - pad);
+    ctx.fillRect(i * slice + pad, j * slice + pad, slice - pad, slice - pad);
   });
   ctx.fillStyle = '#000';
   ctx.font = 'bold 32px monospace';
@@ -31,14 +30,13 @@ function draw() {
 var sel = 0;
 var lsel = 0;
 canvas.onclick = function(e) {
-  lsel = [M.floor(e.offsetX / slice), M.floor(e.offsetY / slice)];
+  lsel = M.floor(e.offsetX / slice) + M.floor(e.offsetY / slice) * z + 1;
   swap(1);
 }
 function swap(chk) {
   if (sel) {
-    var dx = M.abs(lsel[0] - sel[0]);
-    var dy = M.abs(lsel[1] - sel[1]);
-    if (dx + dy != 1) { sel = 0; return; /* error */}
+    var d = Math.abs(lsel - sel);
+    if (d != 1 && d != z) { sel = 0; return; }
     var d = squares[lsel];
     squares[lsel] = squares[sel];
     squares[sel] = d;
@@ -53,18 +51,18 @@ function check(matches, parts) {
 }
 function collapse() {
   var matches = [];
-  loop(function(i, j) {
-    matches = check(check(matches, [[i - 1, j], [i, j], [i + 1, j]]), [[i, j - 1], [i, j], [i, j + 1]]);
+  loop(function(n) {
+    matches = check(check(matches, [n - 1, n, n + 1]), [n + z, n, n - z]);
   });
   var k = matches.length;
   for (var i = 0; i < k; i++) squares[matches[i]] = 0;
   do {
     var s = 0;
-    loop(function(i, j) {
-      if (!squares[[i, j]]) {
-        var d = squares[[i, j - 1]];
-        squares[[i, j]] = d;
-        squares[[i, j - 1]] = 0;
+    loop(function(n) {
+      if (!squares[n]) {
+        var d = squares[n - z];
+        squares[n] = d;
+        squares[n - z] = 0;
         if (d) s++;
       }
     });
@@ -74,9 +72,9 @@ function collapse() {
 }
 function fill() {
   var count = 0;
-  loop(function(i, j) {
-    if (!squares[[i, j]]) {
-      squares[[i, j]] = sq();
+  loop(function(n) {
+    if (!squares[n]) {
+      squares[n] = sq();
       count++;
     }
   });
