@@ -10,6 +10,7 @@ canvas.width = ww;
 canvas.height = ww;
 var pad = 7;
 var slice = ww / w;
+var score = 0;
 function rand(i) { return M.floor(M.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
 var squares = {};
@@ -30,11 +31,14 @@ function draw() {
       ctx.fillRect(m + pad, n + pad, slice - pad, slice - pad);
     }
   }
+  ctx.fillStyle = '#000';
+  ctx.font = 'bold 30px monospace';
+  ctx.fillText(score * 10, ww - 100, 40);
 }
 var sel = null;
 var lsel = null;
 canvas.onclick = function(e) {
-  lsel = [M.floor(e.clientX / slice), M.floor(e.clientY / slice)];
+  lsel = [M.floor(e.offsetX / slice), M.floor(e.offsetY / slice)];
   swap(true);
 }
 function swap(chk) {
@@ -70,6 +74,7 @@ function collapse() {
   }
   while (settle() > 0);
   draw()
+  score += matches.length;
   return matches.length;
 }
 function settle() {
@@ -104,4 +109,6 @@ function refresh() {
   while (collapse() > 0);
   while (fill() > 0);
 }
+refresh();
+score = 0;
 refresh();
