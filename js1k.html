@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+	<head>
+		<title>JS1k, 1k demo submission [pending]</title>
+		<meta charset="utf-8" />
+	</head>
+	<body>
+		<canvas id="c"></canvas>
+		<script>
+b=document.getElementById("c"),c=b.getContext("2d"),d=9,f=d*d,g=f*d+1,h=["aaa","d0d","dd0","0dd"],i=Math,j=b.width=b.height=500,k=5,l=j/d,m=0,o={1:0};o[f]=o[-1]=o[-f]=0;function p(a){for(J=d-1;J--;)for(I=d-1;I--;)a(J*f+I+1,I,J)}var q={};p(function(a){q[a]="#"+h[i.floor(i.random()*4)]});var r=0,s=0;b.onclick=function(a){s=i.floor(a.pageX/l)+i.floor(a.pageY/l)*f+1;t(1)};function t(a){if(r){if(i.abs(s-r)in o){D=q[s];q[s]=q[r];q[r]=D;if(a&&!u()){D=s;s=r;r=D;t(0)}}r=0;v()}else r=s}var w=[];function x(a){w.push.apply(w,q[a[1]]&&q[a[0]]==q[a[1]]&&q[a[1]]==q[a[2]]?a:[])}function u(a){w=[];for(n=g;n--;){x([n-1,n,n+1]);x([n+f,n,n-f])}for(n in w)q[w[n]]=0;do{var e=0;for(n=g;n--;)if(!q[n]){D=q[n-f];q[n]=D;q[n-f]=0;D&&e++}}while(e>0);e=w.length;a||(m+=e);return e}function v(a){for(;u(a)>0;);do{var e=0;for(n=g;n--;)if(!q[n]){q[n]="#"+h[i.floor(i.random()*4)];e++}for(;u(a)>0;);}while(e>0);c.clearRect(0,0,j,j);p(function(y,z,A){c.fillStyle=q[y];c.fillRect(z*l+k,A*l+k,l-k,l-k)});c.fillStyle="#000";c.fillText(m,10,10)}v(1);
+		</script>
+	</body>
+</html>
