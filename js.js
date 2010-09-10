@@ -8,7 +8,7 @@ var ww = 500;
 var hh = 500;
 canvas.width = ww;
 canvas.height = ww;
-var pad = 0;
+var pad = 8;
 var slice = ww / w;
 function rand(i) { return M.floor(M.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
@@ -21,13 +21,12 @@ for (var i = 0; i < w; i++) {
 function draw() {
   for (var i = 0; i < w; i++) {
     for (var j = 0; j < h; j++) {
-      //ctx.fillRect(i * slice + pad, j * slice + pad, i * slice + pad + slice, j * slice + pad + slice);
       var color = squares[[i,j]];
       if (!color) color = '#000';
       ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc((i + 0.5) * slice + pad, (j + 0.5) * slice + pad, slice/2, 0, 2 * M.PI, false);
-      ctx.fill();
+      var m = i * slice;
+      var n = j * slice;
+      ctx.fillRect(m + pad, n + pad, slice - pad, slice - pad);
     }
   }
 }
