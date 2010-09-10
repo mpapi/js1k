@@ -1,6 +1,6 @@
 var canvas = document.getElementById('c');
 var ctx = canvas.getContext('2d');
-var w = 10; var h = 10; var colors = ['#ddd','#d0d','#dd0','#0dd'];
+var w = 10; var h = 10; var colors = ['#aaa','#d0d','#dd0','#0dd'];
 canvas.width = 500;
 canvas.height = 500;
 var ww = 500;
@@ -29,14 +29,21 @@ function draw() {
   }
 }
 var sel = null;
+var lsel = null;
 canvas.onclick = function(e) {
-  var lsel = [[Math.floor(e.offsetX / slice), Math.floor(e.offsetY / slice)]];
+  lsel = [Math.floor(e.offsetX / slice), Math.floor(e.offsetY / slice)];
+  swap(true);
+}
+function swap(chk) {
   if (sel) {
+    var dx = Math.abs(lsel[0] - sel[0]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
+    var dy = Math.abs(lsel[1] - sel[1]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
+    if (dx + dy != 1) { sel = null; return; /* error */}
     var d = squares[lsel];
     squares[lsel] = squares[sel];
     squares[sel] = d;
-    sel = null;
-    refresh();
+    if (chk && collapse() == 0) { var d = lsel; lsel = sel; sel = d; swap(false); }
+    else { sel = null; refresh(); }
   } else {
     sel = lsel;
   }
