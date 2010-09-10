@@ -14,10 +14,8 @@ var slice = ww / w;
 var score = 0;
 function sq() { return colors[M.floor(M.random()*colors.length)]; }
 function loop(fn) {
-  for (var j = h - 1; j >= 0; j--) {
-    for (var i = 0; i < w; i++) {
-      fn(i, j);
-    }
+  var j = h - 1; while (j--) {
+    var i = w - 1; while (w--) fn(i, j);
   }
 }
 var squares = {};
@@ -57,10 +55,7 @@ function swap(chk) {
   }
 }
 function check(matches, parts) {
-    if (squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]]) {
-      return matches.concat(parts);
-    }
-    return matches;
+    return squares[parts[1]] && squares[parts[0]] == squares[parts[1]] && squares[parts[1]] == squares[parts[2]] ? matches.concat(parts) : matches;
 }
 function collapse() {
   var matches = [];
