@@ -54,12 +54,10 @@ function check(matches, parts) {
 function collapse() {
   var matches = [];
   loop(function(i, j) {
-    matches = check(matches, [[i - 1, j], [i, j], [i + 1, j]]);
-    matches = check(matches, [[i, j - 1], [i, j], [i, j + 1]]);
+    matches = check(check(matches, [[i - 1, j], [i, j], [i + 1, j]]), [[i, j - 1], [i, j], [i, j + 1]]);
   });
-  for (var i = 0; i < matches.length; i++) {
-    squares[matches[i]] = 0;
-  }
+  var k = matches.length;
+  for (var i = 0; i < k; i++) squares[matches[i]] = 0;
   do {
     var s = 0;
     loop(function(i, j) {
@@ -70,10 +68,9 @@ function collapse() {
         if (d) s++;
       }
     });
-  }
-  while (s > 0);
-  score += matches.length;
-  return matches.length;
+  } while (s > 0);
+  score += k;
+  return k;
 }
 function fill() {
   var count = 0;
