@@ -1,14 +1,14 @@
 var canvas = document.getElementById('c');
 var ctx = canvas.getContext('2d');
-var w = 8;
-var h = 8; 
+var w = 9;
+var h = 9;
 var colors = ['#aaa','#d0d','#dd0','#0dd'];
 var M = Math;
 var ww = 500;
 var hh = 500;
 canvas.width = ww;
 canvas.height = ww;
-var pad = 8;
+var pad = 7;
 var slice = ww / w;
 function rand(i) { return M.floor(M.random()*i); }
 function sq() { return colors[rand(colors.length)]; }
@@ -19,6 +19,7 @@ for (var i = 0; i < w; i++) {
   }
 }
 function draw() {
+  ctx.clearRect(0, 0, ww, hh);
   for (var i = 0; i < w; i++) {
     for (var j = 0; j < h; j++) {
       var color = squares[[i,j]];
@@ -33,13 +34,13 @@ function draw() {
 var sel = null;
 var lsel = null;
 canvas.onclick = function(e) {
-  lsel = [M.floor(e.offsetX / slice), M.floor(e.offsetY / slice)];
+  lsel = [M.floor(e.clientX / slice), M.floor(e.clientY / slice)];
   swap(true);
 }
 function swap(chk) {
   if (sel) {
-    var dx = M.abs(lsel[0] - sel[0]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
-    var dy = M.abs(lsel[1] - sel[1]); //Math.pow(lsel[0] - sel[0], 2) + Math.pow(lsel[1] - sel[1], 2));
+    var dx = M.abs(lsel[0] - sel[0]);
+    var dy = M.abs(lsel[1] - sel[1]);
     if (dx + dy != 1) { sel = null; return; /* error */}
     var d = squares[lsel];
     squares[lsel] = squares[sel];
@@ -104,4 +105,3 @@ function refresh() {
   while (fill() > 0);
 }
 refresh();
-//while (fill() > 0);
