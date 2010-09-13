@@ -1,0 +1,14 @@
+A match-three game in under 1k of JavaScript.
+
+http://js1k.com/demos#id782
+
+- demo.html: the JS1k demo shim used for testing
+- script.js: the original source (got kind of sloppy near the end)
+- script.min.js: the minified source
+- js1k.html: the page I threw up on the web for having friends test before submitting
+
+It probably has a few bugs and could definitely lose a few more bytes
+(getElementById, how silly).
+
+I'd like to add animations eventually, even better if I can keep it under 1k in
+the process.
